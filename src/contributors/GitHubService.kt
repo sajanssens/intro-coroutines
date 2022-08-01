@@ -25,6 +25,19 @@ interface GitHubService {
         @Path("owner") owner: String,
         @Path("repo") repo: String
     ): Call<List<User>>
+
+    // make `getOrgReposCall` and `getRepoContributorsCall` suspendable:
+
+    @GET("orgs/{org}/repos?per_page=100")
+    suspend fun getOrgReposCallSuspend(
+        @Path("org") org: String
+    ): Response<List<Repo>> // returns a Response<..>
+
+    @GET("repos/{owner}/{repo}/contributors?per_page=100")
+    suspend fun getRepoContributorsCallSuspend(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String
+    ): Response<List<User>> // returns a Response<..>
 }
 
 @Serializable
