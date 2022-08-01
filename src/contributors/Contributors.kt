@@ -3,7 +3,6 @@ package contributors
 import contributors.Contributors.LoadingStatus.*
 import contributors.Variant.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.swing.Swing
 import tasks.*
 import java.awt.event.ActionListener
 import javax.swing.SwingUtilities
@@ -56,45 +55,45 @@ interface Contributors: CoroutineScope {
         when (getSelectedVariant()) {
             BLOCKING -> { // Blocking UI thread
                 val users = loadContributorsBlocking(service, req)
-                updateResults(users, startTime)
+                updateResultsInUI(users, startTime)
             }
             BACKGROUND -> { // Blocking a background thread
                 loadContributorsBackground(service, req) { users ->
                     SwingUtilities.invokeLater {
-                        updateResults(users, startTime)
+                        updateResultsInUI(users, startTime)
                     }
                 }
             }
             CALLBACKS -> { // Using callbacks
                 loadContributorsCallbacks(service, req) { users ->
                     SwingUtilities.invokeLater {
-                        updateResults(users, startTime)
+                        updateResultsInUI(users, startTime)
                     }
                 }
             }
             SUSPEND -> { // Using coroutines
                 launch {
                     val users = loadContributorsSuspend(service, req)
-                    updateResults(users, startTime)
+                    updateResultsInUI(users, startTime)
                 }.setUpCancellation()
             }
             CONCURRENT -> { // Performing requests concurrently
                 launch {
                     val users = loadContributorsConcurrent(service, req)
-                    updateResults(users, startTime)
+                    updateResultsInUI(users, startTime)
                 }.setUpCancellation()
             }
             NOT_CANCELLABLE -> { // Performing requests in a non-cancellable way
                 launch {
                     val users = loadContributorsNotCancellable(service, req)
-                    updateResults(users, startTime)
+                    updateResultsInUI(users, startTime)
                 }.setUpCancellation()
             }
             PROGRESS -> { // Showing progress
                 launch(Dispatchers.Default) {
                     loadContributorsProgress(service, req) { users, completed ->
                         withContext(Dispatchers.Main) {
-                            updateResults(users, startTime, completed)
+                            updateResultsInUI(users, startTime, completed)
                         }
                     }
                 }.setUpCancellation()
@@ -103,7 +102,7 @@ interface Contributors: CoroutineScope {
                 launch(Dispatchers.Default) {
                     loadContributorsChannels(service, req) { users, completed ->
                         withContext(Dispatchers.Main) {
-                            updateResults(users, startTime, completed)
+                            updateResultsInUI(users, startTime, completed)
                         }
                     }
                 }.setUpCancellation()
@@ -119,7 +118,7 @@ interface Contributors: CoroutineScope {
         setActionsStatus(newLoadingEnabled = false)
     }
 
-    private fun updateResults(
+    private fun updateResultsInUI(
         users: List<User>,
         startTime: Long,
         completed: Boolean = true
