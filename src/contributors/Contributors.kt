@@ -91,7 +91,7 @@ interface Contributors: CoroutineScope {
                     updateResultsInUI(users, startTime)
                 }.setUpCancellation()
             }
-            PROGRESS -> { // Showing progress
+            PROGRESS -> { // Using coroutines sequentially and showing progress
                 launch(Dispatchers.Default) {
                     loadContributorsProgress(service, req) { users, completed ->
                         withContext(Dispatchers.Main) {
@@ -100,7 +100,7 @@ interface Contributors: CoroutineScope {
                     }
                 }.setUpCancellation()
             }
-            CHANNELS -> {  // Performing requests concurrently and showing progress
+            CHANNELS -> {  // Using coroutines concurrently and showing progress
                 launch(Dispatchers.Default) {
                     loadContributorsChannels(service, req) { users, completed ->
                         withContext(Dispatchers.Main) {

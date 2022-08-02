@@ -9,7 +9,7 @@ suspend fun loadContributorsConcurrentCancellable(service: GitHubService, req: R
         .also { logRepos(req, it) }
         .bodyList()
 
-    val deferreds: List<Deferred<List<User>>> = repos.map { repo ->
+    val deferredUsers: List<Deferred<List<User>>> = repos.map { repo ->
         async {
             log("starting loading for ${repo.name}")
             delay(3000)
@@ -19,6 +19,6 @@ suspend fun loadContributorsConcurrentCancellable(service: GitHubService, req: R
         }
     }
 
-    deferreds.awaitAll().flatten().aggregate()
+    deferredUsers.awaitAll().flatten().aggregate()
 }
 
