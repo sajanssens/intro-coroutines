@@ -78,8 +78,8 @@ interface Contributors: CoroutineScope {
                 }.setUpCancellation()
             }
             CONCURRENT -> { // Performing requests concurrently
-                launch(Dispatchers.Default) {// runon background threads from dispatcher.Default instead of current UI thread
-                    val users = loadContributorsConcurrent(service, req)
+                launch(Dispatchers.Default) {// run on background threads from dispatcher.Default instead of current UI thread
+                    val users = loadContributorsConcurrentCancellable(service, req)
                     withContext(Dispatchers.Main) {// on UI thread
                         updateResultsInUI(users, startTime)
                     }
@@ -87,7 +87,7 @@ interface Contributors: CoroutineScope {
             }
             NOT_CANCELLABLE -> { // Performing requests in a non-cancellable way
                 launch {
-                    val users = loadContributorsNotCancellable(service, req)
+                    val users = loadContributorsConcurrentNotCancellable(service, req)
                     updateResultsInUI(users, startTime)
                 }.setUpCancellation()
             }

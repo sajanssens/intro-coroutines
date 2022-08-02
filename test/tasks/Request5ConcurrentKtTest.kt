@@ -11,7 +11,7 @@ class Request5ConcurrentKtTest {
     @Test
     fun testConcurrent() = runBlocking {
         val startTime = System.currentTimeMillis()
-        val result = loadContributorsConcurrent(MockGithubService, testRequestData)
+        val result = loadContributorsConcurrentCancellable(MockGithubService, testRequestData)
         Assert.assertEquals("Wrong result for 'loadContributorsConcurrent'", expectedConcurrentResults.users, result)
         val totalTime = System.currentTimeMillis() - startTime
         /*
